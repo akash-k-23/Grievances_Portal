@@ -80,6 +80,95 @@ export const state = {
   toasts: []
 };
 
+const ACCOUNT_STORAGE_KEY = 'grievances_portal_accounts';
+
+function getStoredAccounts() {
+  const storedAccounts = localStorage.getItem(ACCOUNT_STORAGE_KEY);
+  if (!storedAccounts) return [];
+
+  const accounts = JSON.parse(storedAccounts);
+  if (!Array.isArray(accounts)) {
+    throw new Error('Saved accounts data is invalid. Clear this site’s browser data and register again.');
+  }
+  return accounts;
+}
+
+function toHex(bytes) {
+  return Array.from(new Uint8Array(bytes), byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function getCryptoApi() {
+  const cryptoApi = globalThis.crypto;
+  if (!cryptoApi?.subtle) {
+    throw new Error('Secure local sign-in is unavailable in this browser. Open the app through npm start at localhost.');
+  }
+  return cryptoApi;
+}
+
+async function hashPassword(password, salt) {
+  const subtle = getCryptoApi().subtle;
+
+  const key = await subtle.importKey(
+    'raw',
+    new TextEncoder().encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
+  const hash = await subtle.deriveBits({
+    name: 'PBKDF2',
+    salt,
+    iterations: 100000,
+    hash: 'SHA-256'
+  }, key, 256);
+  return toHex(hash);
+}
+
+function hexToBytes(value) {
+  return Uint8Array.from(value.match(/.{2}/g) || [], byte => parseInt(byte, 16));
+}
+
+export async function createLocalAccount({ name, email, password, role, phone, address, department }) {
+  const accounts = getStoredAccounts();
+  const normalizedEmail = email.trim().toLowerCase();
+  if (accounts.some(account => account.email === normalizedEmail)) {
+    throw new Error('An account with this email already exists. Please log in.');
+  }
+
+  const salt = getCryptoApi().getRandomValues(new Uint8Array(16));
+  const user = {
+    id: `usr-${Date.now()}`,
+    name,
+    email: normalizedEmail,
+    role,
+    phone,
+    address,
+    department,
+    avatarInitial: name.charAt(0).toUpperCase()
+  };
+  accounts.push({
+    ...user,
+    passwordSalt: toHex(salt),
+    passwordHash: await hashPassword(password, salt)
+  });
+  localStorage.setItem(ACCOUNT_STORAGE_KEY, JSON.stringify(accounts));
+  return user;
+}
+
+export async function authenticateLocalAccount(email, password, role) {
+  const normalizedEmail = email.trim().toLowerCase();
+  const account = getStoredAccounts().find(savedAccount =>
+    savedAccount.email === normalizedEmail && savedAccount.role === role
+  );
+  if (!account) return null;
+
+  const passwordHash = await hashPassword(password, hexToBytes(account.passwordSalt));
+  if (passwordHash !== account.passwordHash) return null;
+
+  const { passwordSalt, passwordHash: storedPasswordHash, ...user } = account;
+  return user;
+}
+
 // Initialize State from LocalStorage
 try {
   const savedGrievances = localStorage.getItem('grievances_data');
@@ -195,33 +284,6 @@ export function getVisibleGrievances() {
     const creator = (g.authorEmail || g.createdBy || g.userEmail || "").toLowerCase().trim();
     return creator === myEmail;
   });
-}
-
-export async function loadGrievancesFromServer(onComplete) {
-  try {
-    const email = state.currentLoggedInUser ? state.currentLoggedInUser.email : '';
-    const isOfficer = state.currentUser === 'officer';
-    let url = '/api/grievances';
-    if (isOfficer) {
-      url = '/api/grievances?role=officer';
-    } else if (state.currentUser && email) {
-      url = `/api/grievances?role=citizen&email=${encodeURIComponent(email)}`;
-    }
-    const res = await fetch(url);
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && Array.isArray(json.data)) {
-        state.grievances = json.data;
-        saveGrievances();
-        if (state.grievances.length && (!state.selectedRef || !state.grievances.some(g => (g.reference === state.selectedRef || g.referenceId === state.selectedRef)))) {
-          state.selectedRef = state.grievances[0].reference || state.grievances[0].referenceId;
-        }
-        if (typeof onComplete === 'function') onComplete();
-      }
-    }
-  } catch (err) {
-    console.warn('Could not load grievances from server:', err);
-  }
 }
 
 export function showToast(message, type = 'info') {

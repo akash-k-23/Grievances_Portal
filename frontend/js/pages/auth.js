@@ -3,7 +3,7 @@
  */
 
 import { getIcon } from '../icons.js';
-import { state, saveSession, showToast, loadGrievancesFromServer, escapeHtml } from '../state.js';
+import { saveSession, showToast, createLocalAccount, authenticateLocalAccount, escapeHtml } from '../state.js';
 
 let loginRole = 'user'; // 'user' or 'officer'
 let loginForm = { email: '', password: '' };
@@ -22,7 +22,7 @@ export function renderLoginPage() {
         <div class="login-card-head">
           <span class="eyebrow">WELCOME TO YOUR PORTAL</span>
           <h2>Welcome back</h2>
-          <p>Choose your sign-in type to continue.</p>
+          <p>Choose your sign-in type to continue. Accounts and grievances are stored in this browser only.</p>
         </div>
         <div class="login-toggle" role="tablist" aria-label="Login type">
           <button role="tab" aria-selected="${loginRole === 'user'}" class="${loginRole === 'user' ? 'selected' : ''}" id="btn-toggle-user">
@@ -69,7 +69,7 @@ export function renderRegisterPage() {
         <div class="login-card-head">
           <span class="eyebrow">${registerRole === 'user' ? 'USER REGISTRATION' : 'OFFICER REGISTRATION'}</span>
           <h2>Register your account</h2>
-          <p>Fill in your details below to create your account.</p>
+          <p>Fill in your details below. Your demo account is stored in this browser only.</p>
         </div>
         <div class="register-role-choices compact-role-choices" role="group" aria-label="Choose account type">
           <button type="button" class="register-role-choice ${registerRole === 'user' ? 'selected' : ''}" id="btn-reg-role-user">
@@ -180,89 +180,21 @@ export function bindAuthEvents(setView, render) {
       render();
 
       try {
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password, expectedRole: loginRole })
-        });
-        const data = await res.json();
-        if (res.ok && data.success && data.user) {
-          saveSession(data.user);
-          loginBusy = false;
-          loginError = '';
-          showToast('Welcome to your dashboard.');
-          setView('dashboard');
-          loadGrievancesFromServer(render);
-        } else {
-          // Offline / Demo account fallback
-          const cleanEmail = email.trim().toLowerCase();
-          const isOfficerMatch = cleanEmail.includes('officer') || cleanEmail.includes('admin') || loginRole === 'officer';
-          if (isOfficerMatch && (password === 'Admin@123' || password === 'demo' || cleanEmail.includes('admin') || cleanEmail.includes('officer') || cleanEmail.includes('marcus'))) {
-            const officerUser = {
-              id: 'usr-4',
-              name: 'Officer Marcus Davis',
-              email: cleanEmail || 'officer.marcus@grievance.gov',
-              role: 'officer',
-              phone: '+1 (555) 987-6543',
-              department: 'Municipal Infrastructure',
-              avatarInitial: 'M'
-            };
-            saveSession(officerUser);
-            loginBusy = false;
-            loginError = '';
-            showToast('Logged in as Admin Officer.');
-            setView('dashboard');
-            loadGrievancesFromServer(render);
-            return;
-          } else if (!isOfficerMatch && (password === 'User@123' || password === 'demo' || cleanEmail.includes('sarah') || cleanEmail.includes('jai') || cleanEmail.includes('user'))) {
-            const citizenUser = {
-              id: 'usr-1',
-              name: cleanEmail.includes('jai') ? 'Jai Harish' : 'Sarah Jenkins',
-              email: cleanEmail || 'sarah.jenkins@example.com',
-              role: 'citizen',
-              phone: '+1 (555) 000-1111',
-              department: 'Student Affairs',
-              avatarInitial: cleanEmail.includes('jai') ? 'J' : 'S'
-            };
-            saveSession(citizenUser);
-            loginBusy = false;
-            loginError = '';
-            showToast('Logged in as Resident Citizen.');
-            setView('dashboard');
-            loadGrievancesFromServer(render);
-            return;
-          }
-          loginBusy = false;
-          loginError = data.message || 'Those credentials do not match. Please check your details.';
-          render();
-        }
-      } catch (err) {
-        // Fallback for network issues
-        const cleanEmail = email.trim().toLowerCase();
-        const isOfficerMatch = cleanEmail.includes('officer') || cleanEmail.includes('admin') || loginRole === 'officer';
-        const fallbackUser = isOfficerMatch ? {
-          id: 'usr-4',
-          name: 'Officer Marcus Davis',
-          email: cleanEmail || 'officer.marcus@grievance.gov',
-          role: 'officer',
-          phone: '+1 (555) 987-6543',
-          department: 'Municipal Infrastructure',
-          avatarInitial: 'M'
-        } : {
-          id: 'usr-1',
-          name: cleanEmail.includes('jai') ? 'Jai Harish' : 'Sarah Jenkins',
-          email: cleanEmail || 'sarah.jenkins@example.com',
-          role: 'citizen',
-          phone: '+1 (555) 000-1111',
-          department: 'Student Affairs',
-          avatarInitial: cleanEmail.includes('jai') ? 'J' : 'S'
-        };
-        saveSession(fallbackUser);
+        const user = await authenticateLocalAccount(email, password, loginRole);
         loginBusy = false;
+        if (!user) {
+          loginError = 'Those credentials do not match. Please check your details or register an account.';
+          render();
+          return;
+        }
+        saveSession(user);
         loginError = '';
-        showToast(`Welcome to your dashboard (${isOfficerMatch ? 'Admin' : 'User'}).`);
+        showToast('Welcome to your dashboard.');
         setView('dashboard');
-        loadGrievancesFromServer(render);
+      } catch (err) {
+        loginBusy = false;
+        loginError = err instanceof Error ? err.message : 'Unable to sign in with local account storage.';
+        render();
       }
     };
   }
@@ -308,49 +240,25 @@ export function bindAuthEvents(setView, render) {
       render();
 
       try {
-        const res = await fetch('/api/auth/register', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, password, role: registerRole, phone, address, department })
-        });
-        const data = await res.json();
-        registerBusy = false;
-        if (res.ok && data.success && data.user) {
-          saveSession(data.user);
-          showToast('Account created successfully!');
-          setView('dashboard');
-          loadGrievancesFromServer(render);
-        } else {
-          // Local fallback account
-          const newAccount = {
-            id: 'usr-' + Date.now(),
-            name,
-            email: email.toLowerCase(),
-            role: registerRole,
-            phone: phone || '',
-            address: address || '',
-            department: department || '',
-            avatarInitial: name.charAt(0).toUpperCase()
-          };
-          saveSession(newAccount);
-          showToast('Account created successfully!');
-          setView('dashboard');
-        }
-      } catch (err) {
-        registerBusy = false;
-        const newAccount = {
-          id: 'usr-' + Date.now(),
+        const newAccount = await createLocalAccount({
           name,
-          email: email.toLowerCase(),
+          email,
+          password,
           role: registerRole,
           phone: phone || '',
           address: address || '',
-          department: department || '',
-          avatarInitial: name.charAt(0).toUpperCase()
-        };
+          department: department || ''
+        });
+        registerBusy = false;
         saveSession(newAccount);
         showToast('Account created successfully!');
         setView('dashboard');
+      } catch (err) {
+        registerBusy = false;
+        registerErrors = {
+          email: err instanceof Error ? err.message : 'Unable to create an account in local storage.'
+        };
+        render();
       }
     };
   }

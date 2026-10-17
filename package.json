@@ -1,0 +1,17 @@
+{
+  "name": "cons_p",
+  "version": "1.0.0",
+  "description": "Frontend-only grievances portal with browser-local demo data",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}

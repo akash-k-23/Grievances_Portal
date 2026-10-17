@@ -7,7 +7,6 @@ import { getIcon } from './icons.js';
 import { 
   state, 
   clearSession, 
-  loadGrievancesFromServer, 
   escapeHtml 
 } from './state.js';
 
@@ -231,9 +230,6 @@ function bindAllEvents() {
 // Initial Boot (browser only)
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
-    if (state.currentUser) {
-      loadGrievancesFromServer(render);
-    }
     render();
   });
 

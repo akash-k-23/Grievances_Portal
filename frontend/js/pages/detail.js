@@ -311,7 +311,7 @@ export function bindDetailEvents(setView, render) {
 
   const officerStatusSelect = document.getElementById('officer-status');
   if (officerStatusSelect) {
-    officerStatusSelect.onchange = async (e) => {
+    officerStatusSelect.onchange = (e) => {
       const newStatus = e.target.value;
       const item = state.grievances.find(g => (g.reference === state.selectedRef || g.referenceId === state.selectedRef));
       if (item) {
@@ -324,17 +324,6 @@ export function bindDetailEvents(setView, render) {
         saveGrievances();
         showToast(`Status updated to "${newStatus}".`);
         render();
-
-        try {
-          await fetch(`/api/grievances/${item.reference || item.referenceId}/status`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              status: newStatus,
-              officerName: state.currentLoggedInUser ? state.currentLoggedInUser.name : 'Officer'
-            })
-          });
-        } catch (err) {}
       }
     };
   }

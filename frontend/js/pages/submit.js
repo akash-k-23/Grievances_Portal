@@ -390,7 +390,7 @@ export function bindSubmitEvents(setView, render) {
 
   const formSubmit = document.getElementById('form-submit-grievance');
   if (formSubmit) {
-    formSubmit.onsubmit = async (e) => {
+    formSubmit.onsubmit = (e) => {
       e.preventDefault();
       const title = document.getElementById('grievance-title')?.value.trim() || '';
       const category = document.getElementById('grievance-category')?.value || '';
@@ -447,14 +447,6 @@ export function bindSubmitEvents(setView, render) {
           { sender: user.name, time: todayStr, text: `Grievance submitted regarding: ${title}` }
         ]
       };
-
-      try {
-        await fetch('/api/grievances', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newGrievance)
-        });
-      } catch (e) {}
 
       state.grievances.unshift(newGrievance);
       saveGrievances();
