@@ -5,6 +5,12 @@ node_modules/
 .env
 .env.local
 
+<<<<<<< HEAD
+=======
+# Local-only database data
+backend/data/db.json
+
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
 # Logs
 logs/
 *.log

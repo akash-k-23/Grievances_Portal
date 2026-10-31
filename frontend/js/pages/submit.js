@@ -3,7 +3,11 @@
  */
 
 import { getIcon } from '../icons.js';
+<<<<<<< HEAD
 import { state, GRIEVANCE_CATALOG, CATALOG_CATEGORIES, saveGrievances, showToast, formatBytes, formatDate, escapeHtml } from '../state.js';
+=======
+import { state, CATEGORIES, saveGrievances, showToast, formatBytes, formatDate, escapeHtml } from '../state.js';
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
 
 let submitMap = null;
 let submitMarker = null;
@@ -11,7 +15,10 @@ let submitMarker = null;
 let submitValues = {
   title: '',
   category: '',
+<<<<<<< HEAD
   subCategory: '',
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
   description: '',
   location: '',
   incidentDate: new Date().toISOString().split('T')[0],
@@ -27,6 +34,7 @@ let submitFileSize = '';
 let submitFileData = null;
 
 export function renderSubmitPage() {
+<<<<<<< HEAD
   const currentCat = submitValues.category || '';
   const currentSub = submitValues.subCategory || '';
   const currentTitle = submitValues.title || '';
@@ -43,6 +51,14 @@ export function renderSubmitPage() {
     <div class="page-intro compact-page-intro">
       <button class="back-link" id="btn-submit-back-dash">${getIcon('arrow-left')} Dashboard</button>
       <h1 class="black-heading">New Grievance</h1>
+=======
+  return `
+    <div class="page-intro compact-page-intro">
+      <button class="back-link" id="btn-submit-back-dash">${getIcon('arrow-left')} Dashboard</button>
+      <span class="eyebrow">SHARE YOUR CONCERN</span>
+      <h1 class="black-heading">Submit a Grievance</h1>
+      <p>Tell us what happened. We will make sure your concern reaches the right team.</p>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
     </div>
     <form class="submission-layout submission-layout-compact" id="form-submit-grievance" novalidate>
       <section class="panel form-panel form-panel-compact">
@@ -55,6 +71,7 @@ export function renderSubmitPage() {
         </div>
         <div class="form-grid">
           <div class="field">
+<<<<<<< HEAD
             <label class="field-label" for="grievance-category">Category <span class="required">*</span></label>
             <select id="grievance-category">
               <option value="">Select a Category</option>
@@ -77,6 +94,21 @@ export function renderSubmitPage() {
               ${typesList.map(t => `<option value="${escapeHtml(t)}" ${currentTitle === t ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('')}
             </select>
             ${submitErrors.title ? `<span class="field-error" role="alert">${escapeHtml(submitErrors.title)}</span>` : ''}
+=======
+            <label class="field-label" for="grievance-title">Grievance Title <span class="required">*</span></label>
+            <div class="field-input-wrap">
+              <input id="grievance-title" placeholder="A short title for your concern" value="${escapeHtml(submitValues.title)}">
+            </div>
+            ${submitErrors.title ? `<span class="field-error" role="alert">${escapeHtml(submitErrors.title)}</span>` : ''}
+          </div>
+          <div class="field">
+            <label class="field-label" for="grievance-category">Category <span class="required">*</span></label>
+            <select id="grievance-category">
+              <option value="">Select a category</option>
+              ${CATEGORIES.map(c => `<option ${submitValues.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+            </select>
+            ${submitErrors.category ? `<span class="field-error" role="alert">${escapeHtml(submitErrors.category)}</span>` : ''}
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
           </div>
           <div class="field field-full">
             <label class="field-label" for="grievance-description">Description <span class="required">*</span></label>
@@ -304,6 +336,7 @@ export function bindSubmitEvents(setView, render) {
   const btnBack = document.getElementById('btn-submit-back-dash');
   if (btnBack) btnBack.onclick = () => setView('dashboard');
 
+<<<<<<< HEAD
   const catSelect = document.getElementById('grievance-category');
   const subSelect = document.getElementById('grievance-sub-category');
   const titleSelect = document.getElementById('grievance-title');
@@ -417,6 +450,30 @@ export function bindSubmitEvents(setView, render) {
     btnSearchLoc.onclick = () => searchLocationOnMap(inputLoc.value);
   }
 
+=======
+  const btnClear = document.getElementById('btn-submit-clear');
+  if (btnClear) {
+    btnClear.onclick = () => {
+      submitValues = {
+        title: '',
+        category: '',
+        description: '',
+        location: '',
+        incidentDate: new Date().toISOString().split('T')[0],
+        priority: 'Medium',
+        coordinates: { lat: 9.9252, lng: 78.1198 }
+      };
+      submitErrors = {};
+      submitFile = null;
+      submitFileName = '';
+      submitFileType = '';
+      submitFileSize = '';
+      submitFileData = null;
+      render();
+    };
+  }
+
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
   const btnUseCurrentLoc = document.getElementById('btn-use-current-location');
   if (btnUseCurrentLoc) {
     btnUseCurrentLoc.onclick = () => {
@@ -449,6 +506,24 @@ export function bindSubmitEvents(setView, render) {
     };
   }
 
+<<<<<<< HEAD
+=======
+  const btnSearchLoc = document.getElementById('btn-search-location');
+  const inputLoc = document.getElementById('grievance-location');
+  if (btnSearchLoc && inputLoc) {
+    btnSearchLoc.onclick = () => searchLocationOnMap(inputLoc.value);
+    inputLoc.oninput = (e) => {
+      submitValues.location = e.target.value;
+    };
+    inputLoc.onkeydown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchLocationOnMap(inputLoc.value);
+      }
+    };
+  }
+
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
   const fileInput = document.getElementById('grievance-file');
   if (fileInput) {
     fileInput.onchange = (e) => {
@@ -484,6 +559,7 @@ export function bindSubmitEvents(setView, render) {
     };
   }
 
+<<<<<<< HEAD
   const btnClear = document.getElementById('btn-submit-clear');
   if (btnClear) {
     btnClear.onclick = () => {
@@ -514,16 +590,31 @@ export function bindSubmitEvents(setView, render) {
       const category = document.getElementById('grievance-category')?.value || '';
       const subCategory = document.getElementById('grievance-sub-category')?.value || '';
       const title = document.getElementById('grievance-title')?.value || '';
+=======
+  const formSubmit = document.getElementById('form-submit-grievance');
+  if (formSubmit) {
+    formSubmit.onsubmit = (e) => {
+      e.preventDefault();
+      const title = document.getElementById('grievance-title')?.value.trim() || '';
+      const category = document.getElementById('grievance-category')?.value || '';
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       const description = document.getElementById('grievance-description')?.value.trim() || '';
       const location = document.getElementById('grievance-location')?.value.trim() || '';
       const incidentDate = document.getElementById('incident-date')?.value || '';
       const priority = document.getElementById('grievance-priority')?.value || 'Medium';
 
+<<<<<<< HEAD
       submitValues = { title, category, subCategory, description, location, incidentDate, priority, coordinates: submitValues.coordinates };
       const errors = {};
       if (!category) errors.category = 'Please select a category.';
       if (!subCategory) errors.subCategory = 'Please select a sub category.';
       if (!title) errors.title = 'Please select a grievance title / type.';
+=======
+      submitValues = { title, category, description, location, incidentDate, priority, coordinates: submitValues.coordinates };
+      const errors = {};
+      if (!title) errors.title = 'Please enter a title.';
+      if (!category) errors.category = 'Please select a category.';
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       if (!description) errors.description = 'Please describe your concern.';
       if (!location) errors.location = 'Please specify the incident location.';
       if (!incidentDate) errors.incidentDate = 'Please select the incident date.';
@@ -547,7 +638,10 @@ export function bindSubmitEvents(setView, render) {
         referenceId: newRef,
         title,
         category,
+<<<<<<< HEAD
         subCategory,
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         description,
         location,
         coordinates: submitValues.coordinates,
@@ -570,6 +664,7 @@ export function bindSubmitEvents(setView, render) {
         ]
       };
 
+<<<<<<< HEAD
       try {
         await fetch('/api/grievances', {
           method: 'POST',
@@ -578,6 +673,8 @@ export function bindSubmitEvents(setView, render) {
         });
       } catch (e) {}
 
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       state.grievances.unshift(newGrievance);
       saveGrievances();
       state.selectedRef = newRef;
@@ -585,7 +682,10 @@ export function bindSubmitEvents(setView, render) {
       submitValues = {
         title: '',
         category: '',
+<<<<<<< HEAD
         subCategory: '',
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         description: '',
         location: '',
         incidentDate: new Date().toISOString().split('T')[0],

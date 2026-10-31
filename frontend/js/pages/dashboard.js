@@ -53,7 +53,11 @@ export function renderWorkspaceDashboard() {
         <div class="admin-scroll-wrapper">
           <div class="desktop-list-heading admin-list-heading">
             <span>GRIEVANCE ID</span>
+<<<<<<< HEAD
             <span>CATEGORY</span>
+=======
+            <span>REPORT</span>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
             <span>TIME RAISED</span>
             <span>STATUS</span>
             <span>ACTION BY</span>
@@ -65,7 +69,11 @@ export function renderWorkspaceDashboard() {
               const raisedByName = g.authorName || g.userName || 'Citizen';
               const refId = g.reference || g.referenceId;
               const raisedTime = g.submittedDate || g.createdAt || 'Recent';
+<<<<<<< HEAD
               const category = g.category || 'General';
+=======
+              const desc = g.description || 'No description provided';
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
               const isClosed = g.status === 'Resolved';
               const closedTime = g.closedAt || (isClosed ? (g.lastUpdated || 'Recent') : '—');
               const closedBy = g.closedBy || (isClosed ? 'Admin' : '—');
@@ -81,8 +89,13 @@ export function renderWorkspaceDashboard() {
                       <small class="admin-raised-name-sub" title="${escapeHtml(raisedByName)}">${escapeHtml(raisedByName)}</small>
                     </div>
                   </div>
+<<<<<<< HEAD
                   <div class="admin-col-category" title="${escapeHtml(category)}">
                     <span class="admin-category-text">${escapeHtml(category)}</span>
+=======
+                  <div class="admin-col-desc" title="${escapeHtml(desc)}">
+                    <span class="admin-desc-snippet">${escapeHtml(desc)}</span>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
                   </div>
                   <div class="admin-col-raised-time">
                     <small class="admin-inline-label">Raised</small>
@@ -164,6 +177,7 @@ export function renderWorkspaceDashboard() {
   }
 
   return `
+<<<<<<< HEAD
     <section class="stats-grid stats-five">
       ${statsHtml}
       ${!isOfficer ? `
@@ -171,6 +185,22 @@ export function renderWorkspaceDashboard() {
           ${getIcon('plus')} <span>Submit New Grievance</span>
         </button>
       ` : ''}
+=======
+    <div class="welcome-row">
+      <div>
+        <span class="eyebrow">${isOfficer ? 'OFFICER WORKSPACE' : 'YOUR PORTAL'}</span>
+        <h1 class="black-heading">${isOfficer ? 'Good morning, Officer' : 'Welcome back'}</h1>
+        <p>${isOfficer ? 'Review and manage grievances with care.' : 'Here is the latest on your concerns.'}</p>
+      </div>
+      ${!isOfficer ? `
+        <button class="button button-primary" id="btn-dash-new-grievance">
+          ${getIcon('plus')} Submit New Grievance
+        </button>
+      ` : ''}
+    </div>
+    <section class="stats-grid ${isOfficer ? 'stats-five' : ''}">
+      ${statsHtml}
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
     </section>
 
     <!-- Search Grievance Bar immediately after stats tiles -->
@@ -202,6 +232,10 @@ export function renderWorkspaceDashboard() {
     <section class="panel recent-panel">
       <div class="panel-heading">
         <div>
+<<<<<<< HEAD
+=======
+          <span class="eyebrow">${isOfficer ? 'MANAGEMENT QUEUE' : 'LATEST ACTIVITY'}</span>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
           <h2 class="black-heading">${isOfficer ? 'All Grievances' : 'Recent Grievances'}</h2>
         </div>
       </div>

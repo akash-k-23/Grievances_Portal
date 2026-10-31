@@ -88,6 +88,10 @@ export function renderWorkspaceDetailPage() {
         <div>
           <span class="reference-text">${escapeHtml(refId)}</span>
           <h1 class="black-heading">${escapeHtml(item.title)}</h1>
+<<<<<<< HEAD
+=======
+          <p>${escapeHtml(item.category)} <span class="dot-separator">·</span> Submitted ${escapeHtml(item.submittedDate || 'Recently')}</p>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         </div>
         ${getStatusTagHtml(item.status)}
       </div>
@@ -104,8 +108,12 @@ export function renderWorkspaceDetailPage() {
           </div>
           <p class="description-text">${escapeHtml(item.description)}</p>
           <div class="detail-facts-grid">
+<<<<<<< HEAD
             <div class="detail-fact"><span>Category</span><strong>${escapeHtml(item.category || 'General')}</strong></div>
             <div class="detail-fact"><span>Sub Category</span><strong>${escapeHtml(item.subCategory || 'General / Standard')}</strong></div>
+=======
+            <div class="detail-fact"><span>Category</span><strong>${escapeHtml(item.category)}</strong></div>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
             <div class="detail-fact">${getIcon('map-pin')}<span>Location</span><strong>${escapeHtml(item.location || 'Campus')}${item.coordinates ? ` <span class="coord-inline-pill" title="GPS Coordinates">📍 ${item.coordinates.lat.toFixed(4)}, ${item.coordinates.lng.toFixed(4)}</span>` : ''}</strong></div>
             <div class="detail-fact"><span>Incident Date</span><strong>${escapeHtml(item.incidentDate || 'N/A')}</strong></div>
             <div class="detail-fact"><span>Submitted Date</span><strong>${escapeHtml(item.submittedDate || 'Recent')}</strong></div>
@@ -140,7 +148,11 @@ export function renderWorkspaceDetailPage() {
                 <span class="detail-map-pin-icon">${getIcon('map-pin')}</span>
                 <div class="detail-map-site-text">
                   <strong class="detail-map-site-title">${escapeHtml(item.location || 'Reported Incident Site')}</strong>
+<<<<<<< HEAD
                   <small class="detail-map-site-desc">Reported by ${escapeHtml(item.authorName || item.userName || 'Citizen')} · ${escapeHtml(item.category || 'Grievance')}${item.subCategory ? ` · ${escapeHtml(item.subCategory)}` : ''}</small>
+=======
+                  <small class="detail-map-site-desc">Reported by ${escapeHtml(item.authorName || item.userName || 'Citizen')} · ${escapeHtml(item.category || 'Grievance')}</small>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
                 </div>
               </div>
               <div class="detail-map-actions">
@@ -311,7 +323,11 @@ export function bindDetailEvents(setView, render) {
 
   const officerStatusSelect = document.getElementById('officer-status');
   if (officerStatusSelect) {
+<<<<<<< HEAD
     officerStatusSelect.onchange = async (e) => {
+=======
+    officerStatusSelect.onchange = (e) => {
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       const newStatus = e.target.value;
       const item = state.grievances.find(g => (g.reference === state.selectedRef || g.referenceId === state.selectedRef));
       if (item) {
@@ -324,6 +340,7 @@ export function bindDetailEvents(setView, render) {
         saveGrievances();
         showToast(`Status updated to "${newStatus}".`);
         render();
+<<<<<<< HEAD
 
         try {
           await fetch(`/api/grievances/${item.reference || item.referenceId}/status`, {
@@ -335,6 +352,8 @@ export function bindDetailEvents(setView, render) {
             })
           });
         } catch (err) {}
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       }
     };
   }

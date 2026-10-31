@@ -116,7 +116,11 @@ export function renderProfilePage() {
         <div class="profile-card-footer">
           <div class="profile-security-note">
             ${getIcon('shield-check')}
+<<<<<<< HEAD
             <span>Account secured with bcrypt password encryption. Session verified.</span>
+=======
+            <span>Demo account saved in this browser only. Do not use sensitive personal information.</span>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
           </div>
           <button class="button button-primary button-small" id="btn-profile-dashboard">
             Back to Dashboard ${getIcon('arrow-right')}

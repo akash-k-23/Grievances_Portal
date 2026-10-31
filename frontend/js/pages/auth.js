@@ -3,7 +3,11 @@
  */
 
 import { getIcon } from '../icons.js';
+<<<<<<< HEAD
 import { state, saveSession, showToast, loadGrievancesFromServer, escapeHtml } from '../state.js';
+=======
+import { saveSession, showToast, createLocalAccount, authenticateLocalAccount, escapeHtml } from '../state.js';
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
 
 let loginRole = 'user'; // 'user' or 'officer'
 let loginForm = { email: '', password: '' };
@@ -22,7 +26,11 @@ export function renderLoginPage() {
         <div class="login-card-head">
           <span class="eyebrow">WELCOME TO YOUR PORTAL</span>
           <h2>Welcome back</h2>
+<<<<<<< HEAD
           <p>Choose your sign-in type to continue.</p>
+=======
+          <p>Choose your sign-in type to continue. Accounts and grievances are stored in this browser only.</p>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         </div>
         <div class="login-toggle" role="tablist" aria-label="Login type">
           <button role="tab" aria-selected="${loginRole === 'user'}" class="${loginRole === 'user' ? 'selected' : ''}" id="btn-toggle-user">
@@ -69,7 +77,11 @@ export function renderRegisterPage() {
         <div class="login-card-head">
           <span class="eyebrow">${registerRole === 'user' ? 'USER REGISTRATION' : 'OFFICER REGISTRATION'}</span>
           <h2>Register your account</h2>
+<<<<<<< HEAD
           <p>Fill in your details below to create your account.</p>
+=======
+          <p>Fill in your details below. Your demo account is stored in this browser only.</p>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         </div>
         <div class="register-role-choices compact-role-choices" role="group" aria-label="Choose account type">
           <button type="button" class="register-role-choice ${registerRole === 'user' ? 'selected' : ''}" id="btn-reg-role-user">
@@ -180,6 +192,7 @@ export function bindAuthEvents(setView, render) {
       render();
 
       try {
+<<<<<<< HEAD
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -263,6 +276,23 @@ export function bindAuthEvents(setView, render) {
         showToast(`Welcome to your dashboard (${isOfficerMatch ? 'Admin' : 'User'}).`);
         setView('dashboard');
         loadGrievancesFromServer(render);
+=======
+        const user = await authenticateLocalAccount(email, password, loginRole);
+        loginBusy = false;
+        if (!user) {
+          loginError = 'Those credentials do not match. Please check your details or register an account.';
+          render();
+          return;
+        }
+        saveSession(user);
+        loginError = '';
+        showToast('Welcome to your dashboard.');
+        setView('dashboard');
+      } catch (err) {
+        loginBusy = false;
+        loginError = err instanceof Error ? err.message : 'Unable to sign in with local account storage.';
+        render();
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       }
     };
   }
@@ -308,6 +338,7 @@ export function bindAuthEvents(setView, render) {
       render();
 
       try {
+<<<<<<< HEAD
         const res = await fetch('/api/auth/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -351,6 +382,27 @@ export function bindAuthEvents(setView, render) {
         saveSession(newAccount);
         showToast('Account created successfully!');
         setView('dashboard');
+=======
+        const newAccount = await createLocalAccount({
+          name,
+          email,
+          password,
+          role: registerRole,
+          phone: phone || '',
+          address: address || '',
+          department: department || ''
+        });
+        registerBusy = false;
+        saveSession(newAccount);
+        showToast('Account created successfully!');
+        setView('dashboard');
+      } catch (err) {
+        registerBusy = false;
+        registerErrors = {
+          email: err instanceof Error ? err.message : 'Unable to create an account in local storage.'
+        };
+        render();
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       }
     };
   }

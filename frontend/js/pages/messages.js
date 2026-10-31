@@ -139,7 +139,11 @@ export function bindMessagesEvents(setView, render) {
 
   const formMsg = document.getElementById('form-message-composer');
   if (formMsg) {
+<<<<<<< HEAD
     formMsg.onsubmit = async (e) => {
+=======
+    formMsg.onsubmit = (e) => {
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
       e.preventDefault();
       const input = document.getElementById('message-input');
       const text = input ? input.value.trim() : '';
@@ -163,6 +167,7 @@ export function bindMessagesEvents(setView, render) {
 
       const scrollBox = document.getElementById('thread-body-scroll');
       if (scrollBox) scrollBox.scrollTop = scrollBox.scrollHeight;
+<<<<<<< HEAD
 
       try {
         await fetch(`/api/messages/${item.reference || item.referenceId}`, {
@@ -171,6 +176,8 @@ export function bindMessagesEvents(setView, render) {
           body: JSON.stringify(newMsg)
         });
       } catch (err) {}
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
     };
   }
 }

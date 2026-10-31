@@ -7,7 +7,10 @@ import { getIcon } from './icons.js';
 import { 
   state, 
   clearSession, 
+<<<<<<< HEAD
   loadGrievancesFromServer, 
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
   escapeHtml 
 } from './state.js';
 
@@ -38,9 +41,30 @@ export function renderWorkspaceTopNav() {
           ${renderBrandMark()}
           <span class="brand-title">Grievances Portal</span>
         </button>
+<<<<<<< HEAD
       </div>
 
       <div class="header-tools">
+=======
+        <nav class="header-nav-links" aria-label="Main Navigation">
+          <button class="top-nav-btn ${state.currentView === 'dashboard' ? 'top-nav-active' : ''}" id="btn-top-nav-dashboard" title="Dashboard">
+            ${getIcon('house')}
+            <span>Dashboard</span>
+          </button>
+          ${!isOfficer ? `
+            <button class="top-nav-btn header-submit-btn ${state.currentView === 'submit' ? 'top-nav-active' : ''}" id="btn-top-nav-submit" title="Submit Grievance">
+              ${getIcon('plus')}
+              <span>Submit Grievance</span>
+            </button>
+          ` : ''}
+        </nav>
+      </div>
+
+      <div class="header-tools">
+        <span class="role-pill ${isOfficer ? 'role-officer' : 'role-citizen'}">
+          ${isOfficer ? 'Admin Officer' : 'Resident Citizen'}
+        </span>
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
         <button class="header-profile-btn ${state.currentView === 'profile' ? 'profile-active' : ''}" id="btn-header-profile" aria-label="View Profile" title="View Profile">
           <span class="header-avatar">${avatarLetter}</span>
           <span class="header-user-name">${escapeHtml(userName)}</span>
@@ -181,6 +205,15 @@ function bindAllEvents() {
     const btnBrand = document.getElementById('btn-brand-home');
     if (btnBrand) btnBrand.onclick = () => setView('dashboard');
 
+<<<<<<< HEAD
+=======
+    const btnNavDash = document.getElementById('btn-top-nav-dashboard');
+    if (btnNavDash) btnNavDash.onclick = () => setView('dashboard');
+
+    const btnNavSubmit = document.getElementById('btn-top-nav-submit');
+    if (btnNavSubmit) btnNavSubmit.onclick = () => setView('submit');
+
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
     const btnProfile = document.getElementById('btn-header-profile');
     if (btnProfile) btnProfile.onclick = () => setView('profile');
 
@@ -210,9 +243,12 @@ function bindAllEvents() {
 // Initial Boot (browser only)
 if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
+<<<<<<< HEAD
     if (state.currentUser) {
       loadGrievancesFromServer(render);
     }
+=======
+>>>>>>> b9c6af472f454f32b2ee0db4ffaeb31923f4b6b9
     render();
   });
 
